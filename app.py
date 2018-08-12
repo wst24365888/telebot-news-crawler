@@ -3,19 +3,118 @@ import os
 import telebot
 from flask import Flask, request
 
+import requests
+
+from bs4 import BeautifulSoup
+
 TOKEN = os.environ['access_token']
 bot = telebot.TeleBot(TOKEN)
 server = Flask(__name__)
 
+def dcard_top_5():
+
+    reply = 'Dcard 熱門文章 Top 5\n\n'
+
+    url = 'https://www.dcard.tw/f'
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    dcard_titles = soup.find_all('h3', 'PostEntry_title_H5o4d PostEntry_unread_2U217')
+    dcard_links = soup.find_all('a', 'PostEntry_root_V6g0r')
+
+    dcard_article = []
+
+    for i in range(5):
+        dcard_article.append([dcard_titles[i].text, 'https://www.dcard.tw' + dcard_links[i]['href']])
+    
+    for index, item in enumerate(dcard_article):
+        reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
+
+    reply += '輸入\'q\'離開'
+    
+    return reply
+
+def ptt_top_5():
+
+    reply = 'PTT 熱門文章 TOP 5\n\n'
+
+    url = 'https://disp.cc/m/'
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    ptt_titles = soup.find_all('div', 'ht_title')
+    ptt_links = soup.find_all('a')
+
+    ptt_article = []
+
+    for i in range(5):
+        ptt_article.append([ptt_titles[i].text, 'https://disp.cc/m/' + ptt_links[i]['href']])
+    
+    for index, item in enumerate(ptt_article):
+        reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
+
+    print('ok!!')
+
+    reply += '輸入\'q\'離開'
+    
+    return reply
+
+def newtalk_top_5():
+
+    reply = 'NewTalk 即時新聞 TOP 5\n\n'
+
+    url = 'http://newtalk.tw/news/summary/today'
+    resp = requests.get(url)
+    resp.encoding = 'utf-8'
+    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    newtalk_block_1 = soup.find_all('div', 'news-title')
+    newtalk_block_2 = soup.find_all('div', 'text col-md-8 col-sm-8 col-xs-6')
+
+    newtalk_article = []
+
+    for i in range(2):
+        newtalk_article.append([newtalk_block_1[i].text, newtalk_block_1[i].find('a')['href']])
+
+    for i in range(3):
+        newtalk_article.append([newtalk_block_2[i].find('div', 'news_title').text.strip(), newtalk_block_2[i].find('a')['href']])
+    
+    for index, item in enumerate(newtalk_article):
+        reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
+
+    reply += '輸入\'q\'離開'
+
+    return reply
+
 
 @bot.message_handler(commands=['start'])
 def start(message):
-    bot.reply_to(message, 'Hello, ' + message.from_user.first_name)
+	print('command: /start')
+	bot.reply_to(message, 'Hello, ' + message.from_user.first_name + '\n, here is some functions:\n/start\n/newtalk_top_5\n/ptt_top_5\n/dcard_top_5')
+
+
+@bot.message_handler(commands=['newtalk_top_5'])
+def start(message):
+	print('command: /start')
+	bot.reply_to(message, newtalk_top_5())
+
+
+@bot.message_handler(commands=['ptt_top_5'])
+def start(message):
+	print('command: /start')
+	bot.reply_to(message, ptt_top_5())
+
+
+@bot.message_handler(commands=['dcard_top_5'])
+def start(message):
+	print('command: /start')
+	bot.reply_to(message, dcard_top_5())
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def echo_message(message):
-    bot.reply_to(message, message.text)
+	print(message.text)
+	bot.reply_to(message, message.text)
 
 
 @server.route('/' + TOKEN, methods=['POST'])
