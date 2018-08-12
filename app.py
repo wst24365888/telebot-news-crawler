@@ -6,7 +6,7 @@ bot = telebot.TeleBot('your access token')
 
 server = Flask(__name__)
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start', 'help'])
 def start(message):
     bot.reply_to(message, 'Hello, ' + message.from_user.first_name)
 
