@@ -88,7 +88,7 @@ def newtalk_top_5():
 @bot.message_handler(commands=['start', 'leave'])
 def start(message):
 	print('command: /start')
-	bot.reply_to(message, 'Hello, ' + message.from_user.first_name + '\n, here is some functions:\n/start\n/newtalk_top_5\n/ptt_top_5\n/dcard_top_5')
+	bot.reply_to(message, 'Hello, ' + message.from_user.first_name + '.\nHere is some functions:\n/start\n/newtalk_top_5\n/ptt_top_5\n/dcard_top_5')
 
 
 @bot.message_handler(commands=['newtalk_top_5'])
