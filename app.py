@@ -53,8 +53,6 @@ def ptt_top_5():
     for index, item in enumerate(ptt_article):
         reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
 
-    print('ok!!')
-
     reply += '/leave'
     
     return reply
