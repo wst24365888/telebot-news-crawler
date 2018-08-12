@@ -30,7 +30,7 @@ def dcard_top_5():
     for index, item in enumerate(dcard_article):
         reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
 
-    reply += '輸入\'q\'離開'
+    reply += '/leave'
     
     return reply
 
@@ -55,7 +55,7 @@ def ptt_top_5():
 
     print('ok!!')
 
-    reply += '輸入\'q\'離開'
+    reply += '/leave'
     
     return reply
 
@@ -82,12 +82,12 @@ def newtalk_top_5():
     for index, item in enumerate(newtalk_article):
         reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
 
-    reply += '輸入\'q\'離開'
+    reply += '/leave'
 
     return reply
 
 
-@bot.message_handler(commands=['start'])
+@bot.message_handler(commands=['start', 'leave'])
 def start(message):
 	print('command: /start')
 	bot.reply_to(message, 'Hello, ' + message.from_user.first_name + '\n, here is some functions:\n/start\n/newtalk_top_5\n/ptt_top_5\n/dcard_top_5')
