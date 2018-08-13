@@ -3,6 +3,9 @@ import telebot
 from flask import Flask, request
 import requests
 from bs4 import BeautifulSoup
+import firebase_admin
+from firebase_admin import credentials
+from firebase_admin import firestore
 
 
 TOKEN = os.environ['access_token']
@@ -86,10 +89,34 @@ def dcard_top_5():
     return reply
 
 def get_user_id(user_id):
+
     print(user_id)
-    with open('user_ids.txt', 'r+') as f:
-        if user_id not in f.read():
-            f.write(f.read() + '\n' + user_id)
+
+    cred = credentials.Certificate(os.environ['serviceAccount'])
+
+    firebase_admin.initialize_app(cred)
+
+    database = firestore.client()
+
+    path = 'users'
+
+    ids = []
+
+    try:
+        docs = database.collection(path).get()
+
+        for doc in docs:
+            ids.append(doc.to_dict()['id'])
+
+        if user_id not in ids:
+            doc_to_add = {
+                'id': user_id
+            }
+
+            doc_ref = database.document(path + '/user_' + str(user_id))
+            doc_ref.set(doc_to_add)
+    except:
+        pass
 
 
 @bot.message_handler(commands=['start', 'leave'])
