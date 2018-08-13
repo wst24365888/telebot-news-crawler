@@ -8,7 +8,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 
 
-TOKEN = os.environ['access_token'].strip()
+TOKEN = os.environ['access_token']
 bot = telebot.TeleBot(TOKEN)
 server = Flask(__name__)
 
@@ -92,7 +92,7 @@ def get_user_id(user_id):
 
     print(user_id)
 
-    cred = credentials.Certificate(os.environ['serviceAccount'])
+    cred = credentials.Certificate(os.environ['serviceAccount'].strip())
 
     firebase_admin.initialize_app(cred)
 
