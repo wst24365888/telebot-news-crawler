@@ -8,7 +8,7 @@ from firebase_admin import credentials
 from firebase_admin import firestore
 
 
-TOKEN = os.environ['access_token']
+TOKEN = os.environ['access_token'].strip()
 bot = telebot.TeleBot(TOKEN)
 server = Flask(__name__)
 
