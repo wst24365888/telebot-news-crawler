@@ -87,13 +87,13 @@ def dcard_top_5():
 
 def get_user_id(user_id):
     with open('user_ids.txt', 'r+') as f:
-        if str(user_id) not in f.read():
+        if user_id not in f.read():
             f.write(f.read() + '\n' + user_id)
 
 
 @bot.message_handler(commands=['start', 'leave'])
 def start(message):
-    get_user_id(message.chat.id)
+    get_user_id(str(message.chat.id))
     print('command: /start')
     bot.reply_to(message, 'Hello, ' + message.from_user.first_name + '.\nHere are some functions:\n/start\n/newtalk_top_5\n/ptt_top_5\n/dcard_top_5')
 
