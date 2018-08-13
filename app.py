@@ -86,6 +86,7 @@ def dcard_top_5():
     return reply
 
 def get_user_id(user_id):
+    print(user_id)
     with open('user_ids.txt', 'r+') as f:
         if user_id not in f.read():
             f.write(f.read() + '\n' + user_id)
