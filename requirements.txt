@@ -2,3 +2,4 @@ Flask==1.0.2
 requests==2.19.1
 pyTelegramBotAPI==3.6.5
 beautifulsoup4==4.6.0
+firebase-admin==2.12.0
