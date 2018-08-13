@@ -92,7 +92,10 @@ def get_user_id(user_id):
 
     print(user_id)
 
-    cred = credentials.Certificate(os.environ['serviceAccount'].strip())
+    with open('serviceAccount.json', 'w') as f:
+        f.write(os.environ['serviceAccount'])
+
+    cred = credentials.Certificate('serviceAccount.json')
 
     firebase_admin.initialize_app(cred)
 
