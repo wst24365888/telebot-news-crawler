@@ -1,61 +1,14 @@
 import os
-
 import telebot
 from flask import Flask, request
-
 import requests
-
 from bs4 import BeautifulSoup
+
 
 TOKEN = os.environ['access_token']
 bot = telebot.TeleBot(TOKEN)
 server = Flask(__name__)
 
-def dcard_top_5():
-
-    reply = 'Dcard 熱門文章 Top 5\n\n'
-
-    url = 'https://www.dcard.tw/f'
-    resp = requests.get(url)
-    soup = BeautifulSoup(resp.text, 'html.parser')
-
-    dcard_titles = soup.find_all('h3', 'PostEntry_title_H5o4d PostEntry_unread_2U217')
-    dcard_links = soup.find_all('a', 'PostEntry_root_V6g0r')
-
-    dcard_article = []
-
-    for i in range(5):
-        dcard_article.append([dcard_titles[i].text, 'https://www.dcard.tw' + dcard_links[i]['href']])
-    
-    for index, item in enumerate(dcard_article):
-        reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
-
-    reply += '/leave'
-    
-    return reply
-
-def ptt_top_5():
-
-    reply = 'PTT 熱門文章 TOP 5\n\n'
-
-    url = 'https://disp.cc/m/'
-    resp = requests.get(url)
-    soup = BeautifulSoup(resp.text, 'html.parser')
-
-    ptt_titles = soup.find_all('div', 'ht_title')
-    ptt_links = soup.find_all('a')
-
-    ptt_article = []
-
-    for i in range(5):
-        ptt_article.append([ptt_titles[i].text, 'https://disp.cc/m/' + ptt_links[i]['href']])
-    
-    for index, item in enumerate(ptt_article):
-        reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
-
-    reply += '/leave'
-    
-    return reply
 
 def newtalk_top_5():
 
@@ -85,27 +38,75 @@ def newtalk_top_5():
     return reply
 
 
+def ptt_top_5():
+
+    reply = 'PTT 熱門文章 TOP 5\n\n'
+
+    url = 'https://disp.cc/m/'
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    ptt_titles = soup.find_all('div', 'ht_title')
+    ptt_links = soup.find_all('a')
+
+    ptt_article = []
+
+    for i in range(5):
+        ptt_article.append([ptt_titles[i].text, 'https://disp.cc/m/' + ptt_links[i]['href']])
+    
+    for index, item in enumerate(ptt_article):
+        reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
+
+    reply += '/leave'
+    
+    return reply
+
+
+def dcard_top_5():
+
+    reply = 'Dcard 熱門文章 Top 5\n\n'
+
+    url = 'https://www.dcard.tw/f'
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    dcard_titles = soup.find_all('h3', 'PostEntry_title_H5o4d PostEntry_unread_2U217')
+    dcard_links = soup.find_all('a', 'PostEntry_root_V6g0r')
+
+    dcard_article = []
+
+    for i in range(5):
+        dcard_article.append([dcard_titles[i].text, 'https://www.dcard.tw' + dcard_links[i]['href']])
+    
+    for index, item in enumerate(dcard_article):
+        reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
+
+    reply += '/leave'
+    
+    return reply
+
+
 @bot.message_handler(commands=['start', 'leave'])
 def start(message):
 	print('command: /start')
-	bot.reply_to(message, 'Hello, ' + message.from_user.first_name + '.\nHere is some functions:\n/start\n/newtalk_top_5\n/ptt_top_5\n/dcard_top_5')
+	bot.reply_to(message, 'Hello, ' + message.from_user.first_name + '.\nHere are some functions:\n/start\n/newtalk_top_5\n/ptt_top_5\n/dcard_top_5')
 
 
 @bot.message_handler(commands=['newtalk_top_5'])
-def start(message):
-	print('command: /start')
+def get_newtalk_top_5(message):
+	print('command: /newtalk_top_5')
 	bot.reply_to(message, newtalk_top_5())
 
 
 @bot.message_handler(commands=['ptt_top_5'])
-def start(message):
-	print('command: /start')
+def get_ptt_top_5(message):
+	print('command: /ptt_top_5')
 	bot.reply_to(message, ptt_top_5())
 
 
 @bot.message_handler(commands=['dcard_top_5'])
-def start(message):
-	print('command: /start')
+def get_dcard_top_5(message):
+	print('command: /dcard_top_5')
 	bot.reply_to(message, dcard_top_5())
 
 
