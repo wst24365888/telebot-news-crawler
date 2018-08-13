@@ -33,7 +33,7 @@ def newtalk_top_5():
     for index, item in enumerate(newtalk_article):
         reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
 
-    reply += '/leave'
+    reply += '離開: /leave'
 
     return reply
 
@@ -57,7 +57,7 @@ def ptt_top_5():
     for index, item in enumerate(ptt_article):
         reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
 
-    reply += '/leave'
+    reply += '離開: /leave'
     
     return reply
 
@@ -81,7 +81,7 @@ def dcard_top_5():
     for index, item in enumerate(dcard_article):
         reply += '{}. {}\n{}\n\n'.format(index + 1, item[0], item[1])
 
-    reply += '/leave'
+    reply += '離開: /leave'
     
     return reply
 
