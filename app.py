@@ -100,26 +100,30 @@ def start(message):
 
 @bot.message_handler(commands=['newtalk_top_5'])
 def get_newtalk_top_5(message):
-	print('command: /newtalk_top_5')
-	bot.reply_to(message, newtalk_top_5())
+    get_user_id(str(message.chat.id))
+    print('command: /newtalk_top_5')
+    bot.reply_to(message, newtalk_top_5())
 
 
 @bot.message_handler(commands=['ptt_top_5'])
 def get_ptt_top_5(message):
-	print('command: /ptt_top_5')
-	bot.reply_to(message, ptt_top_5())
+    get_user_id(str(message.chat.id))
+    print('command: /ptt_top_5')
+    bot.reply_to(message, ptt_top_5())
 
 
 @bot.message_handler(commands=['dcard_top_5'])
 def get_dcard_top_5(message):
-	print('command: /dcard_top_5')
-	bot.reply_to(message, dcard_top_5())
+    get_user_id(str(message.chat.id))
+    print('command: /dcard_top_5')
+    bot.reply_to(message, dcard_top_5())
 
 
 @bot.message_handler(func=lambda message: True, content_types=['text'])
 def echo_message(message):
-	print(message.text)
-	bot.reply_to(message, message.text)
+    get_user_id(str(message.chat.id))
+    print(message.text)
+    bot.reply_to(message, message.text)
 
 
 @server.route('/' + TOKEN, methods=['POST'])
