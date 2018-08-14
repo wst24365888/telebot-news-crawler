@@ -23,9 +23,9 @@ firebase_admin.initialize_app(cred)
 database = firestore.client()
 
 
-def newtalk_top_5():
+def newtalk_news():
 
-    reply = 'NewTalk 即時新聞 TOP 5\n\n'
+    reply = 'NewTalk 即時新聞\n\n'
 
     url = 'http://newtalk.tw/news/summary/today'
     resp = requests.get(url)
@@ -123,18 +123,18 @@ def get_user_id(user_id):
         pass
 
 
-@bot.message_handler(commands=['start', 'leave'])
+@bot.message_handler(commands=['start', 'help', 'leave'])
 def start(message):
     get_user_id(str(message.chat.id))
-    print('command: /start')
-    bot.reply_to(message, 'Hello, ' + message.from_user.first_name + '.\nHere are some functions:\n/start\n/newtalk_top_5\n/ptt_top_5\n/dcard_top_5')
+    print('command: /main_page')
+    bot.reply_to(message, 'Hello, ' + message.from_user.first_name + '.\nHere are some functions:\n/newtalk_news\n/ptt_top_5\n/dcard_top_5')
 
 
-@bot.message_handler(commands=['newtalk_top_5'])
-def get_newtalk_top_5(message):
+@bot.message_handler(commands=['newtalk_news'])
+def get_newtalk_news(message):
     get_user_id(str(message.chat.id))
-    print('command: /newtalk_top_5')
-    bot.reply_to(message, newtalk_top_5())
+    print('command: /newtalk_news')
+    bot.reply_to(message, newtalk_news())
 
 
 @bot.message_handler(commands=['ptt_top_5'])
