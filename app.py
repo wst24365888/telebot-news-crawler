@@ -10,7 +10,17 @@ from firebase_admin import firestore
 
 TOKEN = os.environ['access_token']
 bot = telebot.TeleBot(TOKEN)
+
 server = Flask(__name__)
+
+
+with open('serviceAccount.json', 'w') as f:
+    f.write(os.environ['serviceAccount'])
+
+cred = credentials.Certificate('serviceAccount.json')
+firebase_admin.initialize_app(cred)
+
+database = firestore.client()
 
 
 def newtalk_top_5():
@@ -91,15 +101,6 @@ def dcard_top_5():
 def get_user_id(user_id):
 
     print(user_id)
-
-    with open('serviceAccount.json', 'w') as f:
-        f.write(os.environ['serviceAccount'])
-
-    cred = credentials.Certificate('serviceAccount.json')
-
-    firebase_admin.initialize_app(cred)
-
-    database = firestore.client()
 
     path = 'users'
 
