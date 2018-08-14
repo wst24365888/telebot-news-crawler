@@ -167,7 +167,7 @@ def getMessage():
 @server.route("/")
 def webhook():
     bot.remove_webhook()
-    bot.set_webhook(url='https://telebot-20180812.herokuapp.com/callback' + TOKEN)
+    bot.set_webhook(url='https://telebot-20180812.herokuapp.com/' + TOKEN)
     return "!", 200
 
 
