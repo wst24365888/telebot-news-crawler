@@ -5,6 +5,9 @@ import requests
 from bs4 import BeautifulSoup
 import re
 import os
+import telebot
+
+bot = telebot.TeleBot(os.environ['access_token'])
 
 with open('serviceAccount.json', 'w') as f:
     f.write(os.environ['serviceAccount'])
@@ -37,7 +40,9 @@ title = notification_object.find('div', 'item-title').text
 link = 'https://www.csie.ncu.edu.tw' + notification_object['href']
 date = notification_object.find('div', 'item-time').text
 
-print('NCUCS佈告欄\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link))
+notification = 'NCUCS佈告欄\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
+
+print(notification)
 
 path = 'news'
 
@@ -59,7 +64,17 @@ try:
             'date': date
             }
             
-    collection_ref.add(doc_to_add)
+        collection_ref.add(doc_to_add)
+
+        ids = []
+
+        ids_doc = database.collection('users').get()
+
+        for id_doc in ids_doc:
+            ids.append(id_doc.to_dict()['id'])
+
+        for id in ids:
+            bot.send_message(id, notification)
 
 except:
     pass
