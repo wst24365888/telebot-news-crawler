@@ -4,6 +4,10 @@ from firebase_admin import firestore
 import requests
 from bs4 import BeautifulSoup
 import re
+import os
+
+with open('serviceAccount.json', 'w') as f:
+    f.write(os.environ['serviceAccount'])
 
 cred = credentials.Certificate('serviceAccount.json')
 firebase_admin.initialize_app(cred)
