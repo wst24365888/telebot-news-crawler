@@ -42,8 +42,6 @@ date = notification_object.find('div', 'item-time').text
 
 notification = 'NCUCS佈告欄\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
 
-print(notification)
-
 path = 'news'
 
 titles = []
@@ -57,6 +55,9 @@ try:
         titles.append(doc.to_dict()['title'])
 
     if title not in titles:
+
+        print(notification)
+        
         doc_to_add = {
             'category': category,
             'title': title,
