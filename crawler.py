@@ -29,7 +29,7 @@ dates = []
 for i in range(len(categories)):
     for j in range(len(objects[i])):
         yyyy, mm, dd = objects[i][j].find('div', 'item-time').text.split('-')
-        dates.append([int(yyyy)*10000 + int(mm)*100 + int(dd), i, j])
+        dates.append([int(yyyy)*10000 + int(mm)*100 + int(dd), categories[i].find('h3', 'list-title').text, objects[i][j].find('div', 'item-title').text, 'https://www.csie.ncu.edu.tw' + notification_object['href']])
         
 dates = sorted(dates, key = lambda element: element[0], reverse = True)
 
@@ -46,12 +46,10 @@ for doc in docs:
 
 for i in range(len(dates)):
 
-    notification_object = objects[dates[i][1]][dates[i][2]]
-
-    category = categories[dates[i][1]].find('h3', 'list-title').text
-    title = notification_object.find('div', 'item-title').text
-    link = 'https://www.csie.ncu.edu.tw' + notification_object['href']
-    date = notification_object.find('div', 'item-time').text
+    date = dates[0]
+    category = dates[1]
+    title = dates[2]
+    link = dates[3]
 
     notification = 'NCUCS佈告欄\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
 
