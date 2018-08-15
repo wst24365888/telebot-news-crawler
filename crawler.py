@@ -206,9 +206,41 @@ def ncu_oga_crawler():
         result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
 
     return result
-    
 
-notifications = ncu_cs_crawler() + ncu_fresh_crawler() + ncu_dorm_crawler() + ust_crawler() + ncu_oaa_crawler() + ncu_osa_crawler()
+def ncu_rd_crawler():
+
+    url = 'https://ncu.edu.tw/rd/'
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    category = '研發處'
+
+    result = []
+
+    dates = []
+    titles = []
+    links = []
+
+    for i in range(len(soup.find_all('td'))):
+        match = re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', str(soup.find_all('td')[i]))
+        if match:
+            dates.append(match.group(0))
+
+    titles = [infos.text for infos in soup.find_all('td', 'd2 d22')]
+
+    for infos in soup.find_all('td', 'd2 d22'):
+        if 'http' not in infos.find('a')['href']:
+            links.append('https://ncu.edu.tw/rd/' + infos.find('a')['href'])
+        else:
+            links.append(infos.find('a')['href'])
+
+    for i in range(len(titles)):
+        yyyy, mm, dd = dates[i].split('-')
+        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+
+    return result
+
+notifications = ncu_cs_crawler() + ncu_fresh_crawler() + ncu_dorm_crawler() + ust_crawler() + ncu_oaa_crawler() + ncu_osa_crawler() + ncu_oga_crawler() + ncu_rd_crawler()
 
 notifications = sorted(notifications, key = lambda element: element[0], reverse = True)
 
