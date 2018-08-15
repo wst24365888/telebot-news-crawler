@@ -7,6 +7,7 @@ import re
 import os
 import telebot
 
+
 bot = telebot.TeleBot(os.environ['access_token'])
 
 with open('serviceAccount.json', 'w') as f:
@@ -17,21 +18,50 @@ firebase_admin.initialize_app(cred)
 
 database = firestore.client()
 
-url = 'https://www.csie.ncu.edu.tw/'
-resp = requests.get(url)
-soup = BeautifulSoup(resp.text, 'html.parser')
 
-categories = soup.find_all('div', 'announcement-scope')
-objects = [info.find_all('a', 'link') for info in categories]
+def ncu_cs_crawler():
 
-dates = []
+    url = 'https://www.csie.ncu.edu.tw/'
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.text, 'html.parser')
 
-for i in range(len(categories)):
-    for j in range(len(objects[i])):
-        yyyy, mm, dd = objects[i][j].find('div', 'item-time').text.split('-')
-        dates.append([int(yyyy)*10000 + int(mm)*100 + int(dd), objects[i][j].find('div', 'item-time').text, categories[i].find('h3', 'list-title').text, objects[i][j].find('div', 'item-title').text, 'https://www.csie.ncu.edu.tw' + objects[i][j]['href']])
-        
-dates = sorted(dates, key = lambda element: element[0], reverse = True)
+    categories = soup.find_all('div', 'announcement-scope')
+    objects = [info.find_all('a', 'link') for info in categories]
+
+    result = []
+
+    for i in range(len(categories)):
+        for j in range(len(objects[i])):
+            yyyy, mm, dd = objects[i][j].find('div', 'item-time').text.split('-')
+            result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), objects[i][j].find('div', 'item-time').text, categories[i].find('h3', 'list-title').text, objects[i][j].find('div', 'item-title').text, 'https://www.csie.ncu.edu.tw' + objects[i][j]['href']])
+
+    return result
+
+def ncu_fresh_crawler():
+
+    url = 'https://ncufresh.ncu.edu.tw/'
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    category = '新生知訊網'
+    objects = soup.find_all('tr', 'news-row open-modal')
+
+    result = []
+
+    dates = [infos.find('td', 'news-time open-modal').text for infos in objects]
+    links = ['https://ncufresh.ncu.edu.tw/require_data/?id={}'.format(infos['id']) for infos in objects]
+    titles = [infos.find('p', 'dotdotdottext open-modal').text for infos in objects]
+
+    for i in range(len(titles)):
+        yyyy, mm, dd = dates[i].split('-')
+        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+
+    return result
+
+
+notifications = ncu_cs_crawler() + ncu_fresh_crawler()
+
+notifications = sorted(notifications, key = lambda element: element[0], reverse = True)
 
 path = 'news'
 
@@ -44,12 +74,12 @@ docs = collection_ref.get()
 for doc in docs:
     titles.append(doc.to_dict()['title'])
 
-for i in range(len(dates)):
+for i in range(len(notifications)):
 
-    date = dates[i][1]
-    category = dates[i][2]
-    title = dates[i][3]
-    link = dates[i][4]
+    date = notifications[i][1]
+    category = notifications[i][2]
+    title = notifications[i][3]
+    link = notifications[i][4]
 
     notification = 'NCUCS佈告欄\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
 
