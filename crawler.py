@@ -58,8 +58,39 @@ def ncu_fresh_crawler():
 
     return result
 
+def ncu_dorm_crawler():
 
-notifications = ncu_cs_crawler() + ncu_fresh_crawler()
+    url = 'https://in.ncu.edu.tw/ncu7221/OSDS/'
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    category = '宿舍公告'
+
+    result = []
+
+    dates = []
+    titles = []
+    links = []
+
+    for i in range(len(soup.find_all('div', align = 'center'))):
+        match = re.search('\\d\\d\\d\\d-\\d\\d-\\d\\d', str(soup.find_all('div', align = 'center')[i]))
+        if match:
+            dates.append(match.group(0))
+
+    for i in range(len(soup.find_all('a'))):
+        match = re.search('post_detail.php\\?no=(.*)">(.*)<', str(soup.find_all('a')[i]))
+        if match:
+            titles.append(match.group(2))
+            links.append('https://in.ncu.edu.tw/ncu7221/OSDS/post_detail.php?no=' + str(match.group(1)))
+
+    for i in range(len(titles)):
+        yyyy, mm, dd = dates[i].split('-')
+        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+
+    return result
+
+
+notifications = ncu_cs_crawler() + ncu_fresh_crawler() + ncu_dorm_crawler()
 
 notifications = sorted(notifications, key = lambda element: element[0], reverse = True)
 
