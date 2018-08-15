@@ -118,7 +118,7 @@ def ust_crawler():
         yyyy, mm, dd = dates[i].split('-')
         result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
 
-    return reply
+    return result
 
 
 notifications = ncu_cs_crawler() + ncu_fresh_crawler() + ncu_dorm_crawler() + ust_crawler()
