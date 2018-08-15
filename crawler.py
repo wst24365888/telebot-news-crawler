@@ -119,7 +119,7 @@ def ust_crawler():
     return reply
 
 
-notifications = ncu_cs_crawler() + ncu_fresh_crawler() + ncu_dorm_crawler() + ust_crawler
+notifications = ncu_cs_crawler() + ncu_fresh_crawler() + ncu_dorm_crawler() + ust_crawler()
 
 notifications = sorted(notifications, key = lambda element: element[0], reverse = True)
 
