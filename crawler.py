@@ -60,7 +60,7 @@ def ncu_fresh_crawler():
 
 def ncu_dorm_crawler():
 
-    url = 'https://in.ncu.edu.tw/ncu7221/OSDS/'
+    url = 'http://in.ncu.edu.tw/ncu7221/OSDS/'
     resp = requests.get(url)
     soup = BeautifulSoup(resp.text, 'html.parser')
 
@@ -81,7 +81,7 @@ def ncu_dorm_crawler():
         match = re.search('post_detail.php\\?no=(.*)">(.*)<', str(soup.find_all('a')[i]))
         if match:
             titles.append(match.group(2))
-            links.append('https://in.ncu.edu.tw/ncu7221/OSDS/post_detail.php?no=' + str(match.group(1)))
+            links.append('http://in.ncu.edu.tw/ncu7221/OSDS/post_detail.php?no=' + str(match.group(1)))
 
     for i in range(len(titles)):
         yyyy, mm, dd = dates[i].split('-')
@@ -89,8 +89,37 @@ def ncu_dorm_crawler():
 
     return result
 
+def ust_crawler():
 
-notifications = ncu_cs_crawler() + ncu_fresh_crawler() + ncu_dorm_crawler()
+    url = 'http://www.ust.edu.tw/News.aspx'
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    category = '臺聯大系統'
+
+    dates = []
+    titles = []
+    links = []
+
+    for i in range(len(soup.find_all('span'))):
+        match = re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', str(soup.find_all('span')[i]))
+        if match:
+            dates.append(match.group(0))
+
+    for i in range(len(soup.find_all('a'))):
+        match = re.search('GUID=(.*)" id=(.*)">(.*)<', str(soup.find_all('a')[i]))
+        if match:
+            titles.append(match.group(3))
+            links.append('http://www.ust.edu.tw/News_Detailed.aspx?GUID=' + str(match.group(1)))
+
+    for i in range(len(titles)):
+        yyyy, mm, dd = dates[i].split('-')
+        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+
+    return reply
+
+
+notifications = ncu_cs_crawler() + ncu_fresh_crawler() + ncu_dorm_crawler() + ust_crawler
 
 notifications = sorted(notifications, key = lambda element: element[0], reverse = True)
 
