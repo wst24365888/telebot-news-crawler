@@ -47,9 +47,9 @@ for doc in docs:
 for i in range(len(dates)):
 
     date = dates[i][1]
-    category = dates[i][1]
-    title = dates[i][1]
-    link = dates[i][1]
+    category = dates[i][2]
+    title = dates[i][3]
+    link = dates[i][4]
 
     notification = 'NCUCS佈告欄\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
 
