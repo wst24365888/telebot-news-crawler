@@ -29,7 +29,7 @@ dates = []
 for i in range(len(categories)):
     for j in range(len(objects[i])):
         yyyy, mm, dd = objects[i][j].find('div', 'item-time').text.split('-')
-        dates.append([int(yyyy)*10000 + int(mm)*100 + int(dd), categories[i].find('h3', 'list-title').text, objects[i][j].find('div', 'item-title').text, 'https://www.csie.ncu.edu.tw' + notification_object['href']])
+        dates.append([int(yyyy)*10000 + int(mm)*100 + int(dd), objects[i][j].find('div', 'item-time').text, categories[i].find('h3', 'list-title').text, objects[i][j].find('div', 'item-title').text, 'https://www.csie.ncu.edu.tw' + objects[i][j]['href']])
         
 dates = sorted(dates, key = lambda element: element[0], reverse = True)
 
@@ -42,14 +42,14 @@ collection_ref = database.collection(path)
 docs = collection_ref.get()
 
 for doc in docs:
-    titles.append(doc.to_dict()['title'])    
+    titles.append(doc.to_dict()['title'])
 
 for i in range(len(dates)):
 
-    date = dates[0]
-    category = dates[1]
-    title = dates[2]
-    link = dates[3]
+    date = dates[1]
+    category = dates[2]
+    title = dates[3]
+    link = dates[4]
 
     notification = 'NCUCS佈告欄\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
 
