@@ -33,38 +33,43 @@ for i in range(len(categories)):
         
 dates = sorted(dates, key = lambda element: element[0], reverse = True)
 
-notification_object = objects[dates[0][1]][dates[0][2]]
-
-category = categories[dates[0][1]].find('h3', 'list-title').text
-title = notification_object.find('div', 'item-title').text
-link = 'https://www.csie.ncu.edu.tw' + notification_object['href']
-date = notification_object.find('div', 'item-time').text
-
-notification = 'NCUCS佈告欄\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
-
 path = 'news'
 
 titles = []
 
-try:
-    collection_ref = database.collection(path)
+collection_ref = database.collection(path)
 
-    docs = collection_ref.get()
+docs = collection_ref.get()
 
-    for doc in docs:
-        titles.append(doc.to_dict()['title'])
+for doc in docs:
+    titles.append(doc.to_dict()['title'])    
 
-    if title not in titles:
+for i in range(len(dates)):
+
+    notification_object = objects[dates[i][1]][dates[i][2]]
+
+    category = categories[dates[i][1]].find('h3', 'list-title').text
+    title = notification_object.find('div', 'item-title').text
+    link = 'https://www.csie.ncu.edu.tw' + notification_object['href']
+    date = notification_object.find('div', 'item-time').text
+
+    notification = 'NCUCS佈告欄\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
+
+    if title in titles:
+
+        break
+
+    else:
 
         print(notification)
-        
+
         doc_to_add = {
             'category': category,
             'title': title,
             'link': link,
             'date': date
             }
-            
+
         collection_ref.add(doc_to_add)
 
         ids = []
@@ -76,6 +81,3 @@ try:
 
         for id in ids:
             bot.send_message(id, notification)
-
-except:
-    pass
