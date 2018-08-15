@@ -97,6 +97,8 @@ def ust_crawler():
 
     category = '臺聯大系統'
 
+    result =[]
+
     dates = []
     titles = []
     links = []
