@@ -155,8 +155,60 @@ def ncu_oaa_crawler():
 
     return result
 
+def ncu_osa_crawler():
 
-notifications = ncu_cs_crawler() + ncu_fresh_crawler() + ncu_dorm_crawler() + ust_crawler() + ncu_oaa_crawler()
+    url = 'http://osa.ncu.edu.tw/'
+    resp = requests.get(url)
+    soup = BeautifulSoup(resp.text, 'html.parser')
+
+    category = '學務處'
+
+    objects = soup.find_all('td', style = 'background:url(images/color-01gray.gif) top repeat-x; padding:9px 10px 9px')
+
+    result = []
+
+    dates = [re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', infos.find('font', 'note').text).group(0) for infos in objects]
+    titles = [infos.find('a').text for infos in objects]
+    links = ['http://osa.ncu.edu.tw/' + infos.find('a')['href'] for infos in objects]
+
+    for i in range(len(titles)):
+        yyyy, mm, dd = dates[i].split('-')
+        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+    
+    return result
+
+def ncu_oga_crawler():
+
+    url = 'http://oga.ncu.edu.tw/ncuoga/oga/index.php'
+    resp = requests.get(url)
+    resp.encoding = 'big5'
+    soup = BeautifulSoup(resp.text, 'html.parser').find('div', 'content1-container-1col')
+
+    category = '總務處'
+
+    result = []
+
+    dates = []
+    titles = []
+    links = []
+
+    for i in range(len(soup.find_all('td'))):
+        match = re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', str(soup.find_all('td')[i]))
+        if match:
+            dates.append(match.group(0))
+
+    for i in range(len(soup.find_all('a'))):
+        titles.append(soup.find_all('a')[i].text)
+        links.append('http://oga.ncu.edu.tw/ncuoga/oga/' + soup.find_all('a')[i]['href'])     
+
+    for i in range(len(titles)):
+        yyyy, mm, dd = dates[i].split('-')
+        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+
+    return result
+    
+
+notifications = ncu_cs_crawler() + ncu_fresh_crawler() + ncu_dorm_crawler() + ust_crawler() + ncu_oaa_crawler() + ncu_osa_crawler()
 
 notifications = sorted(notifications, key = lambda element: element[0], reverse = True)
 
