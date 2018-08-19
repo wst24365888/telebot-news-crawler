@@ -122,36 +122,41 @@ def ust_crawler():
 
 def ncu_oaa_crawler():
 
-    url = 'http://pdc.adm.ncu.edu.tw/news00.asp'
-    resp = requests.get(url)
-    resp.encoding = 'big5'
-    soup = BeautifulSoup(resp.text, 'html.parser')
-
-    category = '教務處'
-
     result = []
 
-    dates = []
-    titles = []
-    links = []
+    try:
 
-    for i in range(len(soup.find_all('td', 'copy'))):
-        match = re.search('\\d\\d\\d\\d.\\d{1,2}.\\d{1,2}', str(soup.find_all('td', 'copy')[i]))
-        if match:
-            dates.append(match.group(0).replace('.', '-'))
+        url = 'http://pdc.adm.ncu.edu.tw/news00.asp'
+        resp = requests.get(url)
+        resp.encoding = 'big5'
+        soup = BeautifulSoup(resp.text, 'html.parser')
 
-    for i in range(len(soup.find_all('a'))):
-        match = re.search('^<a href="(.*)" onfocus=(.*)">(.*)</f', str(soup.find_all('a')[i]))
-        if match:
-            titles.append(match.group(3))
-            if re.search('^news_detail.aspx(.*)', str(match.group(1))):
-                links.append('http://pdc.adm.ncu.edu.tw/' + str(match.group(1)))
-            else:
-                links.append(str(match.group(1)))            
+        category = '教務處'
 
-    for i in range(len(titles)):
-        yyyy, mm, dd = dates[i].split('-')
-        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+        dates = []
+        titles = []
+        links = []
+
+        for i in range(len(soup.find_all('td', 'copy'))):
+            match = re.search('\\d\\d\\d\\d.\\d{1,2}.\\d{1,2}', str(soup.find_all('td', 'copy')[i]))
+            if match:
+                dates.append(match.group(0).replace('.', '-'))
+
+        for i in range(len(soup.find_all('a'))):
+            match = re.search('^<a href="(.*)" onfocus=(.*)">(.*)</f', str(soup.find_all('a')[i]))
+            if match:
+                titles.append(match.group(3))
+                if re.search('^news_detail.aspx(.*)', str(match.group(1))):
+                    links.append('http://pdc.adm.ncu.edu.tw/' + str(match.group(1)))
+                else:
+                    links.append(str(match.group(1)))            
+
+        for i in range(len(titles)):
+            yyyy, mm, dd = dates[i].split('-')
+            result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+
+    except:
+        pass
 
     return result
 
