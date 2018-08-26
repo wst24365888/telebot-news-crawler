@@ -21,102 +21,122 @@ database = firestore.client()
 
 def ncu_cs_crawler():
 
-    url = 'https://www.csie.ncu.edu.tw/'
-    resp = requests.get(url)
-    soup = BeautifulSoup(resp.text, 'html.parser')
-
-    categories = soup.find_all('div', 'announcement-scope')
-    objects = [info.find_all('a', 'link') for info in categories]
-
     result = []
 
-    for i in range(len(categories)):
-        for j in range(len(objects[i])):
-            yyyy, mm, dd = objects[i][j].find('div', 'item-time').text.split('-')
-            result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), objects[i][j].find('div', 'item-time').text, categories[i].find('h3', 'list-title').text, objects[i][j].find('div', 'item-title').text, 'https://www.csie.ncu.edu.tw' + objects[i][j]['href']])
+    try:
 
+        url = 'https://www.csie.ncu.edu.tw/'
+        resp = requests.get(url)
+        soup = BeautifulSoup(resp.text, 'html.parser')
+
+        categories = soup.find_all('div', 'announcement-scope')
+        objects = [info.find_all('a', 'link') for info in categories]
+
+        for i in range(len(categories)):
+            for j in range(len(objects[i])):
+                yyyy, mm, dd = objects[i][j].find('div', 'item-time').text.split('-')
+                result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), objects[i][j].find('div', 'item-time').text, categories[i].find('h3', 'list-title').text, objects[i][j].find('div', 'item-title').text, 'https://www.csie.ncu.edu.tw' + objects[i][j]['href']])
+
+    except:
+        pass
+    
     return result
 
 def ncu_fresh_crawler():
 
-    url = 'https://ncufresh.ncu.edu.tw/'
-    resp = requests.get(url)
-    soup = BeautifulSoup(resp.text, 'html.parser')
-
-    category = '新生知訊網'
-    objects = soup.find_all('tr', 'news-row open-modal')
-
     result = []
 
-    dates = [infos.find('td', 'news-time open-modal').text for infos in objects]
-    links = ['https://ncufresh.ncu.edu.tw/require_data/?id={}'.format(infos['id']) for infos in objects]
-    titles = [infos.find('p', 'dotdotdottext open-modal').text for infos in objects]
+    try:
 
-    for i in range(len(titles)):
-        yyyy, mm, dd = dates[i].split('-')
-        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+        url = 'https://ncufresh.ncu.edu.tw/'
+        resp = requests.get(url)
+        soup = BeautifulSoup(resp.text, 'html.parser')
+
+        category = '新生知訊網'
+        objects = soup.find_all('tr', 'news-row open-modal')
+
+        dates = [infos.find('td', 'news-time open-modal').text for infos in objects]
+        links = ['https://ncufresh.ncu.edu.tw/require_data/?id={}'.format(infos['id']) for infos in objects]
+        titles = [infos.find('p', 'dotdotdottext open-modal').text for infos in objects]
+
+        for i in range(len(titles)):
+            yyyy, mm, dd = dates[i].split('-')
+            result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+
+    except:
+        pass
 
     return result
 
 def ncu_dorm_crawler():
-
-    url = 'http://in.ncu.edu.tw/ncu7221/OSDS/'
-    resp = requests.get(url)
-    soup = BeautifulSoup(resp.text, 'html.parser')
-
-    category = '宿舍公告'
-
+    
     result = []
 
-    dates = []
-    titles = []
-    links = []
+    try:
 
-    for i in range(len(soup.find_all('div', align = 'center'))):
-        match = re.search('\\d\\d\\d\\d-\\d\\d-\\d\\d', str(soup.find_all('div', align = 'center')[i]))
-        if match:
-            dates.append(match.group(0))
+        url = 'http://in.ncu.edu.tw/ncu7221/OSDS/'
+        resp = requests.get(url)
+        soup = BeautifulSoup(resp.text, 'html.parser')
+    
+        category = '宿舍公告'
+    
+        dates = []
+        titles = []
+        links = []
+    
+        for i in range(len(soup.find_all('div', align = 'center'))):
+            match = re.search('\\d\\d\\d\\d-\\d\\d-\\d\\d', str(soup.find_all('div', align = 'center')[i]))
+            if match:
+                dates.append(match.group(0))
+    
+        for i in range(len(soup.find_all('a'))):
+            match = re.search('post_detail.php\\?no=(.*)">(.*)<', str(soup.find_all('a')[i]))
+            if match:
+                titles.append(match.group(2))
+                links.append('http://in.ncu.edu.tw/ncu7221/OSDS/post_detail.php?no=' + str(match.group(1)))
+    
+        for i in range(len(titles)):
+            yyyy, mm, dd = dates[i].split('-')
+            result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
 
-    for i in range(len(soup.find_all('a'))):
-        match = re.search('post_detail.php\\?no=(.*)">(.*)<', str(soup.find_all('a')[i]))
-        if match:
-            titles.append(match.group(2))
-            links.append('http://in.ncu.edu.tw/ncu7221/OSDS/post_detail.php?no=' + str(match.group(1)))
-
-    for i in range(len(titles)):
-        yyyy, mm, dd = dates[i].split('-')
-        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+    except:
+        pass
 
     return result
 
 def ust_crawler():
 
-    url = 'http://www.ust.edu.tw/News.aspx'
-    resp = requests.get(url)
-    soup = BeautifulSoup(resp.text, 'html.parser')
-
-    category = '臺聯大系統'
-
     result =[]
 
-    dates = []
-    titles = []
-    links = []
+    try:
 
-    for i in range(len(soup.find_all('span'))):
-        match = re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', str(soup.find_all('span')[i]))
-        if match:
-            dates.append(match.group(0))
+        url = 'http://www.ust.edu.tw/News.aspx'
+        resp = requests.get(url)
+        soup = BeautifulSoup(resp.text, 'html.parser')
 
-    for i in range(len(soup.find_all('a'))):
-        match = re.search('GUID=(.*)" id=(.*)">(.*)<', str(soup.find_all('a')[i]))
-        if match:
-            titles.append(match.group(3))
-            links.append('http://www.ust.edu.tw/News_Detailed.aspx?GUID=' + str(match.group(1)))
+        category = '臺聯大系統'
 
-    for i in range(len(titles)):
-        yyyy, mm, dd = dates[i].split('-')
-        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+        dates = []
+        titles = []
+        links = []
+
+        for i in range(len(soup.find_all('span'))):
+            match = re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', str(soup.find_all('span')[i]))
+            if match:
+                dates.append(match.group(0))
+
+        for i in range(len(soup.find_all('a'))):
+            match = re.search('GUID=(.*)" id=(.*)">(.*)<', str(soup.find_all('a')[i]))
+            if match:
+                titles.append(match.group(3))
+                links.append('http://www.ust.edu.tw/News_Detailed.aspx?GUID=' + str(match.group(1)))
+
+        for i in range(len(titles)):
+            yyyy, mm, dd = dates[i].split('-')
+            result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+
+    except:
+        pass
 
     return result
 
@@ -161,87 +181,102 @@ def ncu_oaa_crawler():
     return result
 
 def ncu_osa_crawler():
-
-    url = 'http://osa.ncu.edu.tw/'
-    resp = requests.get(url)
-    soup = BeautifulSoup(resp.text, 'html.parser')
-
-    category = '學務處'
-
-    objects = soup.find_all('td', style = 'background:url(images/color-01gray.gif) top repeat-x; padding:9px 10px 9px')
-
+    
     result = []
 
-    dates = [re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', infos.find('font', 'note').text).group(0) for infos in objects]
-    titles = [infos.find('a').text for infos in objects]
-    links = ['http://osa.ncu.edu.tw/' + infos.find('a')['href'] for infos in objects]
+    try:
 
-    for i in range(len(titles)):
-        yyyy, mm, dd = dates[i].split('-')
-        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+        url = 'http://osa.ncu.edu.tw/'
+        resp = requests.get(url)
+        soup = BeautifulSoup(resp.text, 'html.parser')
+
+        category = '學務處'
+
+        objects = soup.find_all('td', style = 'background:url(images/color-01gray.gif) top repeat-x; padding:9px 10px 9px')
+
+        dates = [re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', infos.find('font', 'note').text).group(0) for infos in objects]
+        titles = [infos.find('a').text for infos in objects]
+        links = ['http://osa.ncu.edu.tw/' + infos.find('a')['href'] for infos in objects]
+
+        for i in range(len(titles)):
+            yyyy, mm, dd = dates[i].split('-')
+            result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
     
+    except:
+        pass
+
     return result
 
 def ncu_oga_crawler():
 
-    url = 'http://oga.ncu.edu.tw/ncuoga/oga/index.php'
-    resp = requests.get(url)
-    resp.encoding = 'big5'
-    soup = BeautifulSoup(resp.text, 'html.parser').find('div', 'content1-container-1col')
-
-    category = '總務處'
-
     result = []
 
-    dates = []
-    titles = []
-    links = []
+    try:
 
-    for i in range(len(soup.find_all('td'))):
-        match = re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', str(soup.find_all('td')[i]))
-        if match:
-            dates.append(match.group(0))
+        url = 'http://oga.ncu.edu.tw/ncuoga/oga/index.php'
+        resp = requests.get(url)
+        resp.encoding = 'big5'
+        soup = BeautifulSoup(resp.text, 'html.parser').find('div', 'content1-container-1col')
 
-    for i in range(len(soup.find_all('a'))):
-        titles.append(soup.find_all('a')[i].text)
-        links.append('http://oga.ncu.edu.tw/ncuoga/oga/' + soup.find_all('a')[i]['href'])     
+        category = '總務處'
 
-    for i in range(len(titles)):
-        yyyy, mm, dd = dates[i].split('-')
-        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+        dates = []
+        titles = []
+        links = []
 
+        for i in range(len(soup.find_all('td'))):
+            match = re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', str(soup.find_all('td')[i]))
+            if match:
+                dates.append(match.group(0))
+
+        for i in range(len(soup.find_all('a'))):
+            titles.append(soup.find_all('a')[i].text)
+            links.append('http://oga.ncu.edu.tw/ncuoga/oga/' + soup.find_all('a')[i]['href'])     
+
+        for i in range(len(titles)):
+            yyyy, mm, dd = dates[i].split('-')
+            result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+
+    except:
+        pass
+    
     return result
 
 def ncu_rd_crawler():
 
-    url = 'https://ncu.edu.tw/rd/'
-    resp = requests.get(url)
-    soup = BeautifulSoup(resp.text, 'html.parser')
-
-    category = '研發處'
-
     result = []
 
-    dates = []
-    titles = []
-    links = []
+    try:
 
-    for i in range(len(soup.find_all('td'))):
-        match = re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', str(soup.find_all('td')[i]))
-        if match:
-            dates.append(match.group(0))
+        url = 'https://ncu.edu.tw/rd/'
+        resp = requests.get(url)
+        soup = BeautifulSoup(resp.text, 'html.parser')
 
-    titles = [infos.text for infos in soup.find_all('td', 'd2 d22')]
+        category = '研發處'
 
-    for infos in soup.find_all('td', 'd2 d22'):
-        if 'http' not in infos.find('a')['href']:
-            links.append('https://ncu.edu.tw/rd/' + infos.find('a')['href'])
-        else:
-            links.append(infos.find('a')['href'])
+        dates = []
+        titles = []
+        links = []
 
-    for i in range(len(titles)):
-        yyyy, mm, dd = dates[i].split('-')
-        result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+        for i in range(len(soup.find_all('td'))):
+            match = re.search('\\d\\d\\d\\d-\\d{1,2}-\\d{1,2}', str(soup.find_all('td')[i]))
+            if match:
+                dates.append(match.group(0))
+
+        titles = [infos.text for infos in soup.find_all('td', 'd2 d22')]
+
+        for infos in soup.find_all('td', 'd2 d22'):
+            if 'http' not in infos.find('a')['href']:
+                links.append('https://ncu.edu.tw/rd/' + infos.find('a')['href'])
+            else:
+                links.append(infos.find('a')['href'])
+
+        for i in range(len(titles)):
+            yyyy, mm, dd = dates[i].split('-')
+            result.append([int(yyyy)*10000 + int(mm)*100 + int(dd), dates[i], category, titles[i], links[i]])
+
+    except:
+        pass
 
     return result
 
