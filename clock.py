@@ -4,7 +4,7 @@ sched = BlockingScheduler()
 
 i = 1
  
-@sched.scheduled_job('interval', seconds=120)
+@sched.scheduled_job('interval', seconds=180)
 def cr():
     global i
     print('{}th time doing crawler.'.format(i))
