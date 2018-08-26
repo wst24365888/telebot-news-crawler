@@ -302,7 +302,7 @@ for i in range(len(notifications)):
     title = notifications[i][3]
     link = notifications[i][4]
 
-    notification = 'NCUCS佈告欄\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
+    notification = 'NCUCS 公佈欄通知\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
 
     if title in titles:
 
