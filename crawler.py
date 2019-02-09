@@ -280,71 +280,53 @@ def ncu_rd_crawler():
 
     return result
 
-def store_and_post(crawler, crawler_str):
+notifications = ncu_cs_crawler() + ncu_fresh_crawler() + ncu_dorm_crawler() + ust_crawler() + ncu_oaa_crawler() + ncu_osa_crawler() + ncu_oga_crawler() + ncu_rd_crawler()
 
-    notifications = crawler()
+notifications = sorted(notifications, key = lambda element: element[0], reverse = True)
 
-    notifications = sorted(notifications, key = lambda element: element[0], reverse = True)
+path = 'news'
 
-    path = crawler_str
+titles = []
 
-    titles = []
+collection_ref = database.collection(path)
 
-    collection_ref = database.collection(path)
+docs = collection_ref.get()
 
-    docs = collection_ref.get()
+for doc in docs:
+    titles.append(doc.to_dict()['title'])
 
-    for doc in docs:
-        titles.append(doc.to_dict()['title'])
+for i in range(len(notifications)):
 
-    for i in range(len(notifications)):
+    date = notifications[i][1]
+    category = notifications[i][2]
+    title = notifications[i][3]
+    link = notifications[i][4]
 
-        date = notifications[i][1]
-        category = notifications[i][2]
-        title = notifications[i][3]
-        link = notifications[i][4]
+    notification = 'NCUCS 公佈欄通知\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
 
-        notification = 'NCUCS 公佈欄通知\n\n{}\n\n{}: {}\n{}'.format(date, category, title, link)
+    if title in titles:
 
-        if title in titles:
+        break
 
-            break
+    else:
 
-        else:
+        print(notification)
 
-            print(notification)
+        doc_to_add = {
+            'category': category,
+            'title': title,
+            'link': link,
+            'date': date
+            }
 
-            doc_to_add = {
-                'category': category,
-                'title': title,
-                'link': link,
-                'date': date
-                }
+        collection_ref.add(doc_to_add)
 
-            collection_ref.add(doc_to_add)
+        ids = []
 
-            ids = []
+        ids_doc = database.collection('users').get()
 
-            ids_doc = database.collection('users').get()
+        for id_doc in ids_doc:
+            ids.append(id_doc.to_dict()['id'])
 
-            for id_doc in ids_doc:
-                ids.append(id_doc.to_dict()['id'])
-
-            for id in ids:
-                bot.send_message(id, notification)
-
-store_and_post(ncu_cs_crawler, 'ncu_cs_crawler')
-
-store_and_post(ncu_fresh_crawler, 'ncu_fresh_crawler')
-
-store_and_post(ncu_dorm_crawler, 'ncu_dorm_crawler')
-
-store_and_post(ust_crawler, 'ust_crawler')
-
-store_and_post(ncu_oaa_crawler, 'ncu_oaa_crawler')
-
-store_and_post(ncu_osa_crawler, 'ncu_osa_crawler')
-
-store_and_post(ncu_oga_crawler, 'ncu_oga_crawler')
-
-store_and_post(ncu_rd_crawler, 'ncu_rd_crawler')
+        for id in ids:
+            bot.send_message(id, notification)
